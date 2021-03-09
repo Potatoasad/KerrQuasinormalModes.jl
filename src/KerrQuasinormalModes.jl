@@ -13,11 +13,12 @@ include("ModeCalculator.jl")
 include("QnmRotationSeries.jl")
 include("Interface.jl")
 include("ConfluentHeun.jl")
+include("Differentiation.jl")
 
 #Ψ = qnmfunction(s=-2,l=2,n=2,m=-2,a=0.4)
 #Ψ(2.0)
 function asad()
-    print("blah blah blo yesterday heres somthing new")
+    print("blah blah blo new yesterday heres somthing new")
 end
 
 export SpinWeightedSpherical

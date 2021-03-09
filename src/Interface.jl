@@ -10,7 +10,6 @@ struct HeunConfluentRadial
     coeffs::Array{Complex{Float64},1}
 end
 
-
 function (ψᵣ::HeunConfluentRadial)(r::Union{Float64,Complex{Float64}})
     η = ψᵣ.η;
     α = ψᵣ.α;
