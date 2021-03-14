@@ -13,7 +13,8 @@ include("ModeCalculator.jl")
 include("QnmRotationSeries.jl")
 include("Interface.jl")
 include("ConfluentHeun.jl")
-include("Differentiation.jl")
+include("LinearCombinations.jl")
+include("Derivative.jl")
 
 #Ψ = qnmfunction(s=-2,l=2,n=2,m=-2,a=0.4)
 #Ψ(2.0)
@@ -26,6 +27,7 @@ export HeunConfluentRadial
 export qnmfunction
 export QuasinormalModeFunction
 export asad
+export ComplexPlot
 
 #For debugging
 export HeunConfluentLocalExpansion, ComputeSeries

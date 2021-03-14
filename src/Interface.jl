@@ -1,10 +1,9 @@
-struct ScalarFunctions{T,F}
-    coord::T
-    func::F
-end
+abstract type Callable end
+abstract type CallableAtom <: Callable end
+abstract type CallableCombination <: Callable end
 
 ### Radial Functions
-struct HeunConfluentRadial
+struct HeunConfluentRadial <: CallableAtom
     η::Complex{Float64}; α::Complex{Float64}; ξ::Complex{Float64}; ζ::Complex{Float64}
     r₊::Float64; r₋::Float64
     coeffs::Array{Complex{Float64},1}
@@ -159,8 +158,8 @@ function ComputeSeriesFromab(an::Function,bn::Function; N=250, rN = 0.0*im, PreN
 end
 
 ### Combining the Mode radial and angular Information
-struct QuasinormalModeFunction
-    s::Int64; l::Int64; m::Int64; a::Float64
+struct QuasinormalModeFunction <: CallableAtom
+    s::Int64; l::Int64; m::Int64; n::Int64; a::Float64
     ω::Complex{Float64}
     Alm::Complex{Float64}
     R::HeunConfluentRadial
@@ -181,7 +180,7 @@ function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00)
     ##Angular WaveFunction
     Ψᵪ = SpinWeightedSpheroidal(s,l,m,Cllʼ)
 
-    QuasinormalModeFunction(s,l,m,a,ω,Alm,Ψᵣ,Ψᵪ)
+    QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψᵣ,Ψᵪ)
 end
 
 (Ψ::QuasinormalModeFunction)(r::Number) =  Ψ.R(r)
@@ -199,4 +198,27 @@ end
 (Ψ::QuasinormalModeFunction)(x::NamedTuple{(:r, :θ, :ϕ, :t),Tuple{Number,Number,Number,Number}}) = Ψ.R(x[:r])*Ψ.S(cos(x[:θ]))*exp(im*Ψ.m*ϕ)
 (Ψ::QuasinormalModeFunction)(x::NamedTuple{(:r, :z, :ϕ, :t),Tuple{Number,Number,Number,Number}}) = Ψ.R(x[:r])*Ψ.S(x[:z])*exp(im*Ψ.m*ϕ)
 
-print("Here")
+
+## Display Functions
+import Base.show
+
+function Int2Sub(num,converter)
+    if num < 0
+       strnum = string(num)[2]
+       return "₋"*converter[strnum]
+    else
+       strnum = string(num)[1]
+       return converter[strnum]
+    end
+end
+
+function Base.show(io::IO, ψ::QuasinormalModeFunction)
+    BigDigits = "+-0123456789"
+    SmallDigits = "₊₋₀₁₂₃₄₅₆₇₈₉"
+    Subdict = Dict(zip(BigDigits,SmallDigits))
+    s = Int2Sub(ψ.s,Subdict)
+    l = Int2Sub(ψ.l,Subdict)
+    m = Int2Sub(ψ.m,Subdict)
+    n = Int2Sub(ψ.n,Subdict)
+    print(io,s*"Ψ"*l*m*n)
+end
