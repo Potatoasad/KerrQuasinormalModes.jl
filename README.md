@@ -7,9 +7,11 @@ Define a new quasinormal mode using the `qnmfunction` command.
 ```julia
 Ψ = qnmfunction(s=-2,l=2,m=1,n=1,a=0.2)
 ```
-This computes the quasinormal mode frequency internally and also has built in formulae for these mode function expansions.
-In the R
-
+This computes the quasinormal mode frequency internally and also has built in formulae for the mode function expansions.
+```julia
+r = 2.0:0.01:8.0      #Sample points from the r = 2M out till r = 8M
+Ψ.(r)                 #Radial mode sampled at many r points
+```
 
 ## Animated Plot of Radial Modes
 ![RadialModePlot](docs/QnmAnimated.gif)
