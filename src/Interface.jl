@@ -9,7 +9,7 @@ struct HeunConfluentRadial <: CallableAtom
     coeffs::Array{Complex{Float64},1}
 end
 
-function (ψᵣ::HeunConfluentRadial)(r::Union{Float64,Complex{Float64}})
+function (ψᵣ::HeunConfluentRadial)(r)
     η = ψᵣ.η;
     α = ψᵣ.α;
     ξ = ψᵣ.ξ;
@@ -18,7 +18,7 @@ function (ψᵣ::HeunConfluentRadial)(r::Union{Float64,Complex{Float64}})
     r₋ = ψᵣ.r₋
     asymptoticpart = (r₊-r₋)^(α)*(im*(r-r₋))^(η-α)*(im*(r-r₊))^(ξ)*exp(ζ*r)
     x = (r-r₊)/(r-r₋)
-    finalsum = 0
+    finalsum = 0.0
     for n in 1:length(ψᵣ.coeffs)
        finalsum += ψᵣ.coeffs[n]*x^(n-1)
     end
@@ -52,7 +52,7 @@ function SpinWeightedSphericalCalculation(z,s,l,m)
     #Define the overall factor
     #println((l+m > 20),"  ",(l+s > 20),"  ",(l-m > 20),"  ",(l-s > 20))
     #println(((l+m > 20) | (l+s > 20) | (l-m > 20) | (l-s > 20)))
-    if ((l+m > 20) | (l+s > 20) | (l-m > 20) | (l-s > 20))
+    if ((l+m > 20) || (l+s > 20) || (l-m > 20) || (l-s > 20))
         term1 = (2*l+1)*(sterlings(l+m)/sterlings(l+s))*(sterlings(l-m)/sterlings(l-s))
     else
         term1 = (2*l+1)*(factorial(l+m)/factorial(l+s))*(factorial(l-m)/factorial(l-s))
@@ -64,7 +64,7 @@ function SpinWeightedSphericalCalculation(z,s,l,m)
     sinterm = ((1-z)/2)^l
 
     #The summation terms
-    sumterms = 0
+    sumterms = 0.0
     for r = 0:(l-s)
         consts = binomial(l-s,r)*binomial(l+s,r+s-m)*(-1)^(l-r-s)
         cotterm = ((1+z)/(1-z))^((2*r+s-m)/2)
@@ -103,7 +103,6 @@ function SpinWeightedSpheroidalCalculation(z,s,l,m,Cllʼ,lmin,lmax)
     val = Complex(0.0)
     for j = 1:N
         lʼ = j+lmin-1;
-        #println(lʼ)
         val += Cllʼ[j]*SpinWeightedSphericalCalculation(z,s,lʼ,m)
     end
     val
@@ -183,10 +182,10 @@ function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00)
     QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψᵣ,Ψᵪ)
 end
 
-(Ψ::QuasinormalModeFunction)(r::Number) =  Ψ.R(r)
-(Ψ::QuasinormalModeFunction)(r::Number, θ::Number) =  Ψ.R(r)*Ψ.S(cos(θ))
-(Ψ::QuasinormalModeFunction)(r::Number, θ::Number, ϕ::Number) =  Ψ.R(r)*Ψ.S(cos(θ))*exp(im*Ψ.m*ϕ)
-(Ψ::QuasinormalModeFunction)(r::Number, θ::Number, ϕ::Number, t::Number) =  Ψ.R(r)*Ψ.S(cos(θ))*exp(im*Ψ.m*ϕ)*exp(-im*Ψ.ω*t)
+(Ψ::QuasinormalModeFunction)(r) =  Ψ.R(r)
+(Ψ::QuasinormalModeFunction)(r, θ) =  Ψ.R(r)*Ψ.S(cos(θ))
+(Ψ::QuasinormalModeFunction)(r, θ, ϕ) =  Ψ.R(r)*Ψ.S(cos(θ))*exp(im*Ψ.m*ϕ)
+(Ψ::QuasinormalModeFunction)(r, θ, ϕ, t) =  Ψ.R(r)*Ψ.S(cos(θ))*exp(im*Ψ.m*ϕ)*exp(-im*Ψ.ω*t)
 
 (Ψ::QuasinormalModeFunction)(x::NamedTuple{(:r,),Tuple{Number}}) = Ψ.R(x[:r])
 (Ψ::QuasinormalModeFunction)(x::NamedTuple{(:θ,),Tuple{Number}}) = Ψ.S(cos(x[:θ]))
