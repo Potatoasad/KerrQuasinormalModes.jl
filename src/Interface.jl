@@ -18,7 +18,7 @@ function (ψᵣ::HeunConfluentRadial)(r)
     r₋ = ψᵣ.r₋
     asymptoticpart = (r₊-r₋)^(α)*(im*(r-r₋))^(η-α)*(im*(r-r₊))^(ξ)*exp(ζ*r)
     x = (r-r₊)/(r-r₋)
-    finalsum = 0.0
+    finalsum = Complex(0.0)
     for n in 1:length(ψᵣ.coeffs)
        finalsum += ψᵣ.coeffs[n]*x^(n-1)
     end
@@ -86,7 +86,7 @@ function (Ψ::SpinWeightedSpherical)(z,ϕ)
     Ψ(z)*exp(im*Ψ.m*ϕ)
 end
 
-struct SpinWeightedSpheroidal
+struct SpinWeightedSpheroidal  <: CallableAtom
     s::Int64; l::Int64; m::Int64
     Cllʼ::Array{Complex{Float64},1}
     lmin::Int64; lmax::Int64

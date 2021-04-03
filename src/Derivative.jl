@@ -1,7 +1,7 @@
 ## Define the derivative of a qnm function
 
 #Define the derivative of a HeunConfluentRadial function
-function ∂ᵣ(Ψᵣ::HeunConfluentRadial)
+function ∂ᵣ(ψᵣ::HeunConfluentRadial)
     η = ψᵣ.η;
     α = ψᵣ.α;
     ξ = ψᵣ.ξ;
