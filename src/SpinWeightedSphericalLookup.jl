@@ -27,23 +27,24 @@ function getcode(s,l,m)
 end
 
 getcode(s,l) = MakeSwitchCase("m",-l:l,(s,l))
-getcode(s) = MakeSwitchCase("l",abs(s):4,(s,))
+getcode(s) = MakeSwitchCase("l",abs(s):20,(s,))
 getcode() = MakeSwitchCase("s",-2:2,())
 
-
+#print("again")
 """
 function SpinWeightedSphericalCalculation(z,s,l,m)
     zm = 1-z; zp = 1+z;
     if l < max(abs(s),abs(m))
         return 0.0
     end
+    #println("BEFORE WE HAVE",s," ", l," ", m)
     $(getcode())
     if ((l+m > 20) || (l+s > 20) || (l-m > 20) || (l-s > 20))
         term1 = (2*l+1)*(sterlings(l+m)/sterlings(l+s))*(sterlings(l-m)/sterlings(l-s))
     else
         term1 = (2*l+1)*(factorial(l+m)/factorial(l+s))*(factorial(l-m)/factorial(l-s))
     end
-    #println((l=l,m=m,s=s), (fact = factorial(l+m),), term1)
+    println("HERE WE HAVE",s," ", l," ", m)
     A = sqrt(term1/(4*pi))*(-1)^m
 
     #The sin term right outside the summation

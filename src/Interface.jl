@@ -1,3 +1,5 @@
+using StaticArrays
+
 abstract type Callable end
 abstract type CallableAtom <: Callable end
 abstract type CallableCombination <: Callable end
@@ -85,7 +87,7 @@ function (Ψ::SpinWeightedSpherical)(z,ϕ)
     Ψ(z)*exp(im*Ψ.m*ϕ)
 end
 
-struct SpinWeightedSpheroidal  <: CallableAtom
+struct SpinWeightedSpheroidal <: CallableAtom
     s::Int64; l::Int64; m::Int64
     Cllʼ::Array{Complex{Float64},1}
     lmin::Int64; lmax::Int64
