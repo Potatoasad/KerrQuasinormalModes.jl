@@ -38,10 +38,7 @@ struct SpinWeightedSpherical
     s::Int64; l::Int64; m::Int64
 end
 
-function sterlings(n)
-    return sqrt(2*pi*n)*(n/exp(1))^n
-end
-
+#=
 function SpinWeightedSphericalCalculation(z,s,l,m)
     ### Convention is that θ goes from 0 to pi, and hence cos(θ)
     ### goes from 1 to -1, which means θ/2 is in the first quadrant
@@ -52,6 +49,10 @@ function SpinWeightedSphericalCalculation(z,s,l,m)
     #Define the overall factor
     #println((l+m > 20),"  ",(l+s > 20),"  ",(l-m > 20),"  ",(l-s > 20))
     #println(((l+m > 20) | (l+s > 20) | (l-m > 20) | (l-s > 20)))
+
+    if l < max(abs(s),abs(m))
+        return 0.0
+    end
     if ((l+m > 20) || (l+s > 20) || (l-m > 20) || (l-s > 20))
         term1 = (2*l+1)*(sterlings(l+m)/sterlings(l+s))*(sterlings(l-m)/sterlings(l-s))
     else
@@ -62,18 +63,16 @@ function SpinWeightedSphericalCalculation(z,s,l,m)
 
     #The sin term right outside the summation
     sinterm = ((1-z)/2)^l
-
     #The summation terms
     sumterms = 0.0
     for r = 0:(l-s)
         consts = binomial(l-s,r)*binomial(l+s,r+s-m)*(-1)^(l-r-s)
-        cotterm = ((1+z)/(1-z))^((2*r+s-m)/2)
+        cotterm = (sqrt((1+z)/(1-z)))^((2*r+s-m))
         sumterms += consts*cotterm
     end
-
     return A*sinterm*sumterms
 end
-
+=#
 function (Ψ::SpinWeightedSpherical)(z)
     s = Ψ.s; l = Ψ.l; m = Ψ.m;
     if (l >= min(abs(m),abs(s))) & (l >= abs(m))
@@ -110,8 +109,8 @@ end
 
 function (Ψ::SpinWeightedSpheroidal)(z)
     s = Ψ.s; l = Ψ.l; m = Ψ.m;
-    lmin = Ψ.lmin; lmax = Ψ.lmax; Cllʼ = Ψ.Cllʼ;
-    SpinWeightedSpheroidalCalculation(z,s,l,m,Cllʼ,lmin,lmax)
+    lmin = Ψ.lmin; lmax = Ψ.lmax;
+    SpinWeightedSpheroidalCalculation(z,s,l,m,Ψ.Cllʼ,lmin,lmax)
 end
 
 (Ψ::SpinWeightedSpheroidal)(z,ϕ) = Ψ(z)*exp(im*Ψ.m*ϕ)
@@ -182,10 +181,25 @@ function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00)
     QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψᵣ,Ψᵪ)
 end
 
+struct Custom end
+function qnmfunction(::typeof(Custom); s=-2,l=2,m=2,n=0,a=0.00, ω = Complex(0.0), Alm = Complex(0.0), Cllʼ = [Complex(0.0)])
+    ((ζ,ξ,η),(p,α,γ,δ,σ),(D₀,D₁,D₂,D₃,D₄)) = ParameterTransformations(l,m,s,a,ω,Alm)
+    r₊ = 1 + sqrt(1-a^2); r₋ = 1 - sqrt(1-a^2)
+
+    ##Radial WaveFunction
+    aₙ = RadialCoefficients(D₀, D₁, D₂, D₃, D₄)
+    Ψᵣ = HeunConfluentRadial(η,α,ξ,ζ,r₊,r₋,aₙ)
+
+    ##Angular WaveFunction
+    Ψᵪ = SpinWeightedSpheroidal(s,l,m,Cllʼ)
+
+    QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψᵣ,Ψᵪ)
+end
+
 (Ψ::QuasinormalModeFunction)(r) =  Ψ.R(r)
-(Ψ::QuasinormalModeFunction)(r, θ) =  Ψ.R(r)*Ψ.S(cos(θ))
-(Ψ::QuasinormalModeFunction)(r, θ, ϕ) =  Ψ.R(r)*Ψ.S(cos(θ))*exp(im*Ψ.m*ϕ)
-(Ψ::QuasinormalModeFunction)(r, θ, ϕ, t) =  Ψ.R(r)*Ψ.S(cos(θ))*exp(im*Ψ.m*ϕ)*exp(-im*Ψ.ω*t)
+(Ψ::QuasinormalModeFunction)(r, z) =  Ψ.R(r)*Ψ.S(z)
+(Ψ::QuasinormalModeFunction)(r, z, ϕ) =  Ψ.R(r)*Ψ.S(z)*exp(im*Ψ.m*ϕ)
+(Ψ::QuasinormalModeFunction)(r, z, ϕ, t) =  Ψ.R(r)*Ψ.S(z)*exp(im*Ψ.m*ϕ)*exp(-im*Ψ.ω*t)
 
 (Ψ::QuasinormalModeFunction)(x::NamedTuple{(:r,),Tuple{Number}}) = Ψ.R(x[:r])
 (Ψ::QuasinormalModeFunction)(x::NamedTuple{(:θ,),Tuple{Number}}) = Ψ.S(cos(x[:θ]))

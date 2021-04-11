@@ -11,6 +11,7 @@ include("SolverFunctions.jl")
 include("Schwarzschild.jl")
 include("ModeCalculator.jl")
 include("QnmRotationSeries.jl")
+include("SpinWeightedSphericalLookup.jl")
 include("Interface.jl")
 include("ConfluentHeun.jl")
 include("LinearCombinations.jl")
@@ -30,6 +31,6 @@ export asad
 export ComplexPlot
 
 #For debugging
-export HeunConfluentLocalExpansion, ComputeSeries
+export HeunConfluentLocalExpansion, ComputeSeries, qnm, Custom
 
 end
