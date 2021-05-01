@@ -3,6 +3,8 @@ module KerrQuasinormalModes
 using LinearAlgebra
 using NLsolve
 using Statistics
+using CSV
+using StaticArrays
 
 include("AngularFunctions.jl")
 include("ParameterFunctions.jl")
