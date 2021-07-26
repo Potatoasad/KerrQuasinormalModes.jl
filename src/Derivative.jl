@@ -94,4 +94,12 @@ function ∂θ(Ψ::LinearCombinationOf{T}) where T
     sum(v ≈ Complex(0.0) ? v : v*∂θ(k) for (k,v) in Ψ.dict)
 end
 
+function ∂t(Ψ::LinearCombinationOf{T}) where T
+    sum(v ≈ Complex(0.0) ? v : v*∂t(k) for (k,v) in Ψ.dict)
+end
+
+function ∂ϕ(Ψ::LinearCombinationOf{T}) where T
+    sum(v ≈ Complex(0.0) ? v : v*∂ϕ(k) for (k,v) in Ψ.dict)
+end
+
 export ∂r, ∂θ, ∂t, ∂ϕ
