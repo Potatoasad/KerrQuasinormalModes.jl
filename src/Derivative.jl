@@ -74,6 +74,17 @@ function ∂θ(Ψ::QuasinormalModeFunction)
     Ap1*Ψp1+Am1*Ψm1
 end
 
+function ∂t(Ψ::QuasinormalModeFunction)
+    ω = Ψ.ω;
+    -im*ω*Ψ
+end
+
+function ∂ϕ(Ψ::QuasinormalModeFunction)
+    m = Ψ.m;
+    im*m*Ψ
+end
+
+
 
 function ∂r(Ψ::LinearCombinationOf{T}) where T
     sum(v*∂r(k) for (k,v) in Ψ.dict)
@@ -83,4 +94,4 @@ function ∂θ(Ψ::LinearCombinationOf{T}) where T
     sum(v ≈ Complex(0.0) ? v : v*∂θ(k) for (k,v) in Ψ.dict)
 end
 
-export ∂r, ∂θ
+export ∂r, ∂θ, ∂t, ∂ϕ
