@@ -44,7 +44,7 @@ function SpinWeightedSphericalCalculation(z,s,l,m)
     else
         term1 = (2*l+1)*(factorial(l+m)/factorial(l+s))*(factorial(l-m)/factorial(l-s))
     end
-    println("HERE WE HAVE",s," ", l," ", m)
+    #println("HERE WE HAVE",s," ", l," ", m)
     A = sqrt(term1/(4*pi))*(-1)^m
 
     #The sin term right outside the summation
