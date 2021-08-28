@@ -129,7 +129,7 @@ function RadialCoefficients(D₀, D₁, D₂, D₃, D₄; N = 250)
     u1,u2,u3,u4 = rNCoeffs(D₀,D₁,D₂,D₃,D₄)
     rN = 1 + u1*N^(-0.5) + u2*N^(-1) + u3*N^(1.5) + u4*N^(-2)
 
-    ComputeSeriesFromab(an,bn; rN=rN, PreN=0)
+    ComputeSeriesFromab(an,bn; N=N, rN=rN, PreN=0)
 end
 
 function ComputeSeriesFromab(an::Function,bn::Function; N=250, rN = 0.0*im, PreN = 40)
@@ -167,14 +167,14 @@ struct QuasinormalModeFunction <: CallableAtom
 end
 
 
-function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00)
+function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00, N=250)
     ω, Alm, Cllʼ = qnm(l=l,m=m,s=s,n=n, a=a)
 
     ((ζ,ξ,η),(p,α,γ,δ,σ),(D₀,D₁,D₂,D₃,D₄)) = ParameterTransformations(l,m,s,a,ω,Alm)
     r₊ = 1 + sqrt(1-a^2); r₋ = 1 - sqrt(1-a^2)
 
     ##Radial WaveFunction
-    aₙ = RadialCoefficients(D₀, D₁, D₂, D₃, D₄)
+    aₙ = RadialCoefficients(D₀, D₁, D₂, D₃, D₄; N=N)
     Ψᵣ = HeunConfluentRadial(η,α,ξ,ζ,r₊,r₋,aₙ)
 
     ##Angular WaveFunction
@@ -183,13 +183,24 @@ function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00)
     QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψᵣ,Ψᵪ)
 end
 
+function importqnm()
+    global qnm = pyimport("qnm")
+    qnm.download_data()
+end
+
+function qnmfunctionnew(s,l,m,n,a; N=250)
+    grav_freq = qnm.modes_cache(s=s,l=l,m=m,n=n)
+    ω, Alm, Cllʼ = grav_freq(a=a)
+    qnmfunction(Custom; s=s,l=l,m=m,n=n,a=a,ω=ω,Alm=Alm,Cllʼ=Cllʼ,N=N)
+end
+
 struct Custom end
-function qnmfunction(::typeof(Custom); s=-2,l=2,m=2,n=0,a=0.00, ω = Complex(0.0), Alm = Complex(0.0), Cllʼ = [Complex(0.0)])
+function qnmfunction(::typeof(Custom); s=-2,l=2,m=2,n=0,a=0.00, ω = Complex(0.0), Alm = Complex(0.0), Cllʼ = [Complex(0.0)], N=250)
     ((ζ,ξ,η),(p,α,γ,δ,σ),(D₀,D₁,D₂,D₃,D₄)) = ParameterTransformations(l,m,s,a,ω,Alm)
     r₊ = 1 + sqrt(1-a^2); r₋ = 1 - sqrt(1-a^2)
 
     ##Radial WaveFunction
-    aₙ = RadialCoefficients(D₀, D₁, D₂, D₃, D₄)
+    aₙ = RadialCoefficients(D₀, D₁, D₂, D₃, D₄; N=N)
     Ψᵣ = HeunConfluentRadial(η,α,ξ,ζ,r₊,r₋,aₙ)
 
     ##Angular WaveFunction

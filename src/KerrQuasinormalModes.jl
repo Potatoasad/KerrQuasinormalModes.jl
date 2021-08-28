@@ -34,5 +34,5 @@ export ComplexPlot
 
 #For debugging
 export HeunConfluentLocalExpansion, ComputeSeries, qnm, Custom
-
+export importqnm, qnmfunctionnew
 end
