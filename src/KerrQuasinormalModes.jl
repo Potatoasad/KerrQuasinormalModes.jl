@@ -5,6 +5,7 @@ using NLsolve
 using Statistics
 using CSV
 using StaticArrays
+using PyCall
 
 include("AngularFunctions.jl")
 include("ParameterFunctions.jl")
@@ -34,5 +35,5 @@ export ComplexPlot
 
 #For debugging
 export HeunConfluentLocalExpansion, ComputeSeries, qnm, Custom
-export importqnm, qnmfunctionnew
+#export importqnm, qnmfunctionnew
 end

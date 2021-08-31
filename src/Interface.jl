@@ -182,7 +182,7 @@ function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00, N=250)
 
     QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψᵣ,Ψᵪ)
 end
-
+#=
 function importqnm()
     global qnm = pyimport("qnm")
     qnm.download_data()
@@ -193,7 +193,7 @@ function qnmfunctionnew(s,l,m,n,a; N=250)
     ω, Alm, Cllʼ = grav_freq(a=a)
     qnmfunction(Custom; s=s,l=l,m=m,n=n,a=a,ω=ω,Alm=Alm,Cllʼ=Cllʼ,N=N)
 end
-
+=#
 struct Custom end
 function qnmfunction(::typeof(Custom); s=-2,l=2,m=2,n=0,a=0.00, ω = Complex(0.0), Alm = Complex(0.0), Cllʼ = [Complex(0.0)], N=250)
     ((ζ,ξ,η),(p,α,γ,δ,σ),(D₀,D₁,D₂,D₃,D₄)) = ParameterTransformations(l,m,s,a,ω,Alm)
