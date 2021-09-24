@@ -5,10 +5,10 @@ abstract type CallableAtom <: Callable end
 abstract type CallableCombination <: Callable end
 
 ### Radial Functions
-struct HeunConfluentRadial <: CallableAtom
+struct HeunConfluentRadial{T} <: CallableAtom
     η::Complex{Float64}; α::Complex{Float64}; ξ::Complex{Float64}; ζ::Complex{Float64}
     r₊::Float64; r₋::Float64
-    coeffs::Array{Complex{Float64},1}
+    coeffs::T
 end
 
 function (ψᵣ::HeunConfluentRadial)(r)
@@ -87,9 +87,9 @@ function (Ψ::SpinWeightedSpherical)(z,ϕ)
     Ψ(z)*exp(im*Ψ.m*ϕ)
 end
 
-struct SpinWeightedSpheroidal <: CallableAtom
+struct SpinWeightedSpheroidal{T} <: CallableAtom
     s::Int64; l::Int64; m::Int64
-    Cllʼ::Array{Complex{Float64},1}
+    Cllʼ::T
     lmin::Int64; lmax::Int64
 end
 
@@ -158,23 +158,25 @@ function ComputeSeriesFromab(an::Function,bn::Function; N=250, rN = 0.0*im, PreN
 end
 
 ### Combining the Mode radial and angular Information
-struct QuasinormalModeFunction <: CallableAtom
+struct QuasinormalModeFunction{T,L} <: CallableAtom
     s::Int64; l::Int64; m::Int64; n::Int64; a::Float64
     ω::Complex{Float64}
     Alm::Complex{Float64}
-    R::HeunConfluentRadial
-    S::SpinWeightedSpheroidal
+    R::HeunConfluentRadial{T}
+    S::SpinWeightedSpheroidal{L}
 end
 
 
-function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00, N=250)
+function qnmfunction(; s=-2,l=2,m=2,n=0,a=0.00, N=150)
     ω, Alm, Cllʼ = qnm(l=l,m=m,s=s,n=n, a=a)
 
     ((ζ,ξ,η),(p,α,γ,δ,σ),(D₀,D₁,D₂,D₃,D₄)) = ParameterTransformations(l,m,s,a,ω,Alm)
     r₊ = 1 + sqrt(1-a^2); r₋ = 1 - sqrt(1-a^2)
 
     ##Radial WaveFunction
-    aₙ = RadialCoefficients(D₀, D₁, D₂, D₃, D₄; N=N)
+    an = RadialCoefficients(D₀, D₁, D₂, D₃, D₄; N=(N+100))
+    an2 = an[1:N];
+    aₙ = SVector{length(an2),Complex{Float64}}(an2)
     Ψᵣ = HeunConfluentRadial(η,α,ξ,ζ,r₊,r₋,aₙ)
 
     ##Angular WaveFunction
@@ -195,12 +197,14 @@ function qnmfunctionnew(s,l,m,n,a; N=250)
 end
 =#
 struct Custom end
-function qnmfunction(::typeof(Custom); s=-2,l=2,m=2,n=0,a=0.00, ω = Complex(0.0), Alm = Complex(0.0), Cllʼ = [Complex(0.0)], N=250)
+function qnmfunction(::typeof(Custom); s=-2,l=2,m=2,n=0,a=0.00, ω = Complex(0.0), Alm = Complex(0.0), Cllʼ = [Complex(0.0)], N=150)
     ((ζ,ξ,η),(p,α,γ,δ,σ),(D₀,D₁,D₂,D₃,D₄)) = ParameterTransformations(l,m,s,a,ω,Alm)
     r₊ = 1 + sqrt(1-a^2); r₋ = 1 - sqrt(1-a^2)
 
     ##Radial WaveFunction
-    aₙ = RadialCoefficients(D₀, D₁, D₂, D₃, D₄; N=N)
+    an = RadialCoefficients(D₀, D₁, D₂, D₃, D₄; N=(N+100))
+    an2 = an[1:N];
+    aₙ = SVector{length(an2),Complex{Float64}}(an2)
     Ψᵣ = HeunConfluentRadial(η,α,ξ,ζ,r₊,r₋,aₙ)
 
     ##Angular WaveFunction
