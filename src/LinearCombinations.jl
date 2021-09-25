@@ -12,6 +12,8 @@ LinearCombinationOf(x;c = Complex(0.0)) = LinearCombinationOf(x,c)
 #(x::HeunConfluentRadial)(s) = s^2 + 2s
 (x::LinearCombinationOf{T})(s...) where T = sum(k(s...)*v for (k,v) ∈ x.dict) + x.constant
 
+postprocess(x::LinearCombinationOf{T}) where T = LinearCombinationOf(filter(a->a.second==zero(a.second),x.dict),x.constant)
+
 import Base.+, Base.-, Base.*
 #const HCRNum = Union{HeunConfluentRadial, Number}
 const LC = LinearCombinationOf{HeunConfluentRadial}
@@ -34,7 +36,8 @@ function (+)(x::CallableAtom)
 end
 
 function (+)(x::Callable,y::Callable)
-    LinearCombinationOf(merge(+,GetDict(x),GetDict(y)),constant(x)+constant(y))
+    z = LinearCombinationOf(merge(+,GetDict(x),GetDict(y)),constant(x)+constant(y))
+    postprocess(z)
 end
 
 function (+)(x::Number,y::Callable)
@@ -50,7 +53,8 @@ function (-)(x::CallableAtom)
 end
 
 function (-)(x::Callable,y::Callable)
-    LinearCombinationOf(merge(+,GetDict(x),Dict((k,-v) for (k,v) ∈ GetDict(y))),constant(x)+constant(y))
+    z = LinearCombinationOf(merge(+,GetDict(x),Dict((k,-v) for (k,v) ∈ GetDict(y))),constant(x)+constant(y))
+    postprocess(z)
 end
 
 function (-)(x::Number,y::Callable)
@@ -65,7 +69,8 @@ end
 
 function (*)(x::Number,y::Callable)
     ydict = GetDict(y);
-    LinearCombinationOf(Dict((k,v*x) for (k,v) ∈ GetDict(y)),constant(y)*x)
+    z = LinearCombinationOf(Dict((k,v*x) for (k,v) ∈ GetDict(y)),constant(y)*x)
+    postprocess(z)
 end
 
 (*)(y::Callable,x::Number) = x*y
