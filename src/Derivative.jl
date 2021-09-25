@@ -13,11 +13,12 @@ function ∂r(ψᵣ::HeunConfluentRadial)
     change"""
     Ψη = HeunConfluentRadial(η-1,α,ξ,ζ,r₊,r₋,aₙ)
     Ψξ = HeunConfluentRadial(η,α,ξ-1,ζ,r₊,r₋,aₙ)
-    aₙshift = circshift(aₙ,-1)
-    aₙshift[end] = 0
+    aₙshift = convert(Vector{eltype(aₙ)},circshift(aₙ,-1))
+    aₙshift[end] = zero(eltype(aₙshift))
     nn = 1:length(aₙshift)
     aₙshift = aₙshift .*nn
-    Ψaₙ = HeunConfluentRadial(η-1,α+1,ξ,ζ,r₊,r₋,aₙshift)
+    aₙshift_static = similar_type(aₙ)(aₙshift)
+    Ψaₙ = HeunConfluentRadial(η-1,α+1,ξ,ζ,r₊,r₋,aₙshift_static)
     (im*(η-α))*Ψη + (im*ξ)*Ψξ + ζ*ψᵣ - Ψaₙ
 end
 
@@ -38,12 +39,13 @@ function ∂r(Ψ::QuasinormalModeFunction)
     Ψηf = QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψη,Ψ.S)
     Ψξ = HeunConfluentRadial(η,α,ξ-1,ζ,r₊,r₋,aₙ)
     Ψξf = QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψξ,Ψ.S)
-    aₙshift = circshift(aₙ,-1)
-    aₙshift[end] = 0.0*im
+    aₙshift = convert(Vector{eltype(aₙ)},circshift(aₙ,-1))
+    aₙshift[end] = zero(eltype(aₙ))
     nn = 1:length(aₙshift)
     #print("here")
     aₙshift = aₙshift .*nn
-    Ψaₙ = HeunConfluentRadial(η-1,α+1,ξ,ζ,r₊,r₋,aₙshift)
+    aₙshift_static = similar_type(aₙ)(aₙshift)
+    Ψaₙ = HeunConfluentRadial(η-1,α+1,ξ,ζ,r₊,r₋,aₙshift_static)
     Ψaₙf = QuasinormalModeFunction(s,l,m,n,a,ω,Alm,Ψaₙ,Ψ.S)
     (im*(η-α))*Ψηf + (im*ξ)*Ψξf + ζ*Ψ - Ψaₙf
 end
@@ -91,15 +93,15 @@ function ∂r(Ψ::LinearCombinationOf{T}) where T
 end
 
 function ∂θ(Ψ::LinearCombinationOf{T}) where T
-    sum(v ≈ Complex(0.0) ? v : v*∂θ(k) for (k,v) in Ψ.dict)
+    sum(v ≈ zero(v) ? v : v*∂θ(k) for (k,v) in Ψ.dict)
 end
 
 function ∂t(Ψ::LinearCombinationOf{T}) where T
-    sum(v ≈ Complex(0.0) ? v : v*∂t(k) for (k,v) in Ψ.dict)
+    sum(v ≈ zero(v) ? v : v*∂t(k) for (k,v) in Ψ.dict)
 end
 
 function ∂ϕ(Ψ::LinearCombinationOf{T}) where T
-    sum(v ≈ Complex(0.0) ? v : v*∂ϕ(k) for (k,v) in Ψ.dict)
+    sum(v ≈ zero(v) ? v : v*∂ϕ(k) for (k,v) in Ψ.dict)
 end
 
 export ∂r, ∂θ, ∂t, ∂ϕ
