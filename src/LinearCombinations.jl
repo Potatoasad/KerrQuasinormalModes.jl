@@ -14,7 +14,7 @@ LinearCombinationOf(x;c = Complex(0.0)) = LinearCombinationOf(x,c)
 
 function postprocess(x::LinearCombinationOf{T}) where T
     if all(x == zero(x) for x ∈ values(x.dict))
-        return first(x.dict)
+        return LinearCombinationOf(Dict(first(x.dict)), first(values(x.dict)))
     end
     LinearCombinationOf(filter(a->a.second!=zero(a.second),x.dict),x.constant)
 end
