@@ -12,7 +12,12 @@ LinearCombinationOf(x;c = Complex(0.0)) = LinearCombinationOf(x,c)
 #(x::HeunConfluentRadial)(s) = s^2 + 2s
 (x::LinearCombinationOf{T})(s...) where T = sum(k(s...)*v for (k,v) ∈ x.dict) + x.constant
 
-postprocess(x::LinearCombinationOf{T}) where T = LinearCombinationOf(filter(a->a.second==zero(a.second),x.dict),x.constant)
+function postprocess(x::LinearCombinationOf{T}) where T
+    if all(x == zero(x) for x ∈ values(x.dict))
+        return first(x.dict)
+    end
+    LinearCombinationOf(filter(a->a.second!=zero(a.second),x.dict),x.constant)
+end
 
 import Base.+, Base.-, Base.*
 #const HCRNum = Union{HeunConfluentRadial, Number}
