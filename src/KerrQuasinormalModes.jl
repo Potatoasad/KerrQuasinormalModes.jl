@@ -5,7 +5,6 @@ using NLsolve
 using Statistics
 using CSV
 using StaticArrays
-using PyCall
 
 include("AngularFunctions.jl")
 include("ParameterFunctions.jl")
