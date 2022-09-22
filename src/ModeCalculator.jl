@@ -35,8 +35,8 @@ function GetModes(l,m,n,s; amax = 0.99, ϵ = 0.01, Nmax = 300)
         ωs[i] = P.ω
         Almss[i] = P.Alm
         _,Cll,_ = ComputeAₗₘ(P.s,P.m,P.a*P.ω, P.Alm,P.lmax)
-        for j in length(Cll)
-            for i in Nas
+        for j in 1:length(Cll)
+            for i in 1:NCsize
                 Cllss[j,i]  = Cll[j]
             end
         end
