@@ -41,4 +41,4 @@ __Radial & Spin Weighted Harmonic Wavefunctions__
 ```
 
 ## Animated Plot of Radial Modes
-![RadialModePlot](.docs/QnmAnimated.gif)
+![RadialModePlot](docs/QnmAnimated.gif)
