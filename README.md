@@ -67,5 +67,4 @@ julia> ψnew(2.5,0.7)  # Evaluating this new variable is a completely valid and 
 ```
 
 ## Animated Plot of Radial Modes
-
-![RadialModePlot](.docs/QnmAnimated.gif)
+![RadialModePlot](docs/QnmAnimated.gif)
