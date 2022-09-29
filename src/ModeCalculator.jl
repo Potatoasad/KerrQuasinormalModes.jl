@@ -1,4 +1,4 @@
-function GetModes(l,m,n,s; amax = 0.99, ϵ = 0.01, Nmax = 300)
+function GetModes(l,m,n,s; amax = 0.999, ϵ = 0.01, Nmax = 300)
     ##Initialize
     as = [a for a in 0.0:ϵ:amax]
     ωs = zero(im*(as))
@@ -27,8 +27,11 @@ function GetModes(l,m,n,s; amax = 0.99, ϵ = 0.01, Nmax = 300)
             P.Nmax = NmaxTrials[iterations]
             P.lmax = lmaxTrials[iterations]
             ω₀ = P.ω; Alm₀ = P.Alm;
-            Newton!(P,ϵs)
-            ωnew = P.ω; Almnew = P.Alm
+            for do_some_iters ∈ 1:10
+                Newton!(P,ϵs)
+                ωnew = P.ω; Almnew = P.Alm
+                println(P.a," ", ωnew)
+            end
             iterations += 1
         end
 
