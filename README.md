@@ -1,4 +1,5 @@
 # KerrQuasinormalModes
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14171824.svg)](https://doi.org/10.5281/zenodo.14171824)
 
 This is a package that not only computes Quasinormal Modes for Kerr Black holes, but focuses on an easy to use (yet performant) interface for working with the Quasinormal Mode Functions. These functions are basically solutions to the Tuekolsky Equations for different s,l,m,n and a values. We implement the [Cook-Zalutskiy solver](https://arxiv.org/abs/1410.7698) to compute the quasinormal mode frequency and also the radial expansion coefficients, as well as the spectral coefficients in the angular sector. 
 
